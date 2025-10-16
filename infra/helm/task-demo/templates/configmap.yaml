@@ -1,0 +1,9 @@
+{{- if .Values.configmap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.image.name }}-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  {{- toYaml .Values.configmap | nindent 3 }}
+{{- end }}

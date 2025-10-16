@@ -1,0 +1,12 @@
+{{- if .Values.PodDisruptionBudget }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.image.name }}
+  namespace: {{ .Values.image.namespace }}
+spec:
+  minAvailable: {{ .Values.minAvailable }}
+  selector:
+    matchLabels:
+      app: {{ .Values.image.name }}
+{{- end }}

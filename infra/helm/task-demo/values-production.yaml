@@ -1,0 +1,106 @@
+# Default values for admin-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+minAvailable: 2
+
+image:
+  name: task-demo
+  namespace: default
+  repository: decky17/task-demo
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 1.0.0
+
+imagePullSecrets: 
+  - name: docker-secret
+nameOverride: ""
+fullnameOverride: ""
+
+PodDisruptionBudget: true
+service:
+  enabled: true
+  type: LoadBalancer
+  ports:
+    port: 5000
+    targetPort: 5000
+    nodePort: 32000
+    protocol: TCP
+
+ingress:
+  enabled: false
+
+  
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "task-demo"
+
+configmap: {}
+
+environment: {}
+  
+
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 3000
+  fsGroup: 2000
+  fsGroupChangePolicy: "OnRootMismatch"
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  # readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 250m
+    memory: 300Mi
+  requests:
+    cpu: 100m
+    memory: 250Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+# Liveness Configuration
+# Indicates whether the Container is running. If the liveness probe fails, 
+# the kubelet kills the Container, and the Container is subjected to its restart policy
+livenessProbe:
+  httpGet:
+    path: /
+    port: 5000
+  initialDelaySeconds: 90
+  periodSeconds: 90
+  timeoutSeconds: 60
+  failureThreshold: 3
+  successThreshold: 1
+
+# Readiness Configuration
+# let Kubernetes know when your app (running in a container inside Pod) 
+# is ready to serve traffic. It's depends on the runtime startup of the applications.
+readinessProbe:
+  httpGet:
+    path: /
+    port: 5000
+  initialDelaySeconds: 90
+  periodSeconds: 90
+  timeoutSeconds: 60
+  failureThreshold: 3
+  successThreshold: 1
+  
