@@ -12,3 +12,11 @@ data:
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
+
+      - job_name: 'default-namespace-pods'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace]
+            action: keep
+            regex: default
