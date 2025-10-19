@@ -1,3 +1,2 @@
 Flask
-socket
-functools
+prometheus_client
