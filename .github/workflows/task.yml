@@ -43,8 +43,8 @@ jobs:
             touch .env 
             echo "POSTGRES_PASSWORD=2" >> .env
             rm -rf infra service
-            cp /tmp/data/infra ~/data/task/infra
-            cp /tmp/data/service ~/data/task/service
+            cp -r /tmp/data/infra ~/data/task/infra
+            cp -r /tmp/data/service ~/data/task/service
             sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}|" .env
             cat .env
 
