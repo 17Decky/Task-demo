@@ -14,7 +14,7 @@ on:
 
 jobs:
   deploy:
-    environment: production
+    environment: TASK DEMO
     runs-on: ubuntu-latest
     
     steps:
