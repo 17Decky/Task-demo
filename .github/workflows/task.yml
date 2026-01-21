@@ -19,21 +19,6 @@ jobs:
     
     steps:
 
-      - name: Test SSH connection
-        run: |
-          # Save key to file
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/key
-          chmod 600 /tmp/key
-          
-          # Test connection
-          ssh -i /tmp/key \
-            -o StrictHostKeyChecking=no \
-            -o ConnectTimeout=5 \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-            "echo 'SSH connection successful!'"
-          
-          rm /tmp/key
-
       - uses: actions/checkout@v6
       
       - name: Upload SafeLine files
@@ -53,13 +38,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e  # Exit on error
-            mkdir -p /data/task
-            cd /data/task
+            mkdir -p ~/data/task
+            cd ~/data/task
             touch .env 
             echo "POSTGRES_PASSWORD=2" >> .env
             rm -rf infra service
-            cp /tmp/data/infra /data/task/infra
-            cp /tmp/data/service /data/task/service
+            cp /tmp/data/infra ~/data/task/infra
+            cp /tmp/data/service ~/data/task/service
             sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}|" .env
             cat .env
 
