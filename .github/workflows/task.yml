@@ -1,0 +1,49 @@
+name: Task
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+        type: string
+
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    environment: production
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Upload SafeLine files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "infra,service"
+          target: "/tmp/data"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e  # Exit on error
+            mkdir -p /data/task
+            cd /data/task
+            touch .env 
+            echo "POSTGRES_PASSWORD=2" >> .env
+            rm -rf infra service
+            cp /tmp/data/infra /data/task/infra
+            cp /tmp/data/service /data/task/service
+            sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}|" .env
+            cat .env
+
